@@ -5,7 +5,7 @@ from sqlalchemy import Integer, Boolean, VARCHAR, Enum, String, SmallInt
 from src.models.Subjects import Subjects
 
 
-class QuestionYNModel(BaseTable):
+class QuestionYNORM(BaseTable):
     question_id: Mapped[int] = mapped_column(Integer, unique=False, nullable=False,
                                              primary_key=True, autoincrement=True)
 
@@ -24,7 +24,7 @@ class QuestionYNModel(BaseTable):
         return f'<{self.__class__.__name__}:{self.question_id}>'
 
 
-class QuestionONEModel(BaseTable):
+class QuestionONEORM(BaseTable):
     question_id: Mapped[int] = mapped_column(Integer, unique=False, nullable=False,
                                              primary_key=True, autoincrement=True)
 
@@ -48,7 +48,7 @@ class QuestionONEModel(BaseTable):
         return f'<{self.__class__.__name__}:{self.question_id}>'
 
 
-class QuestionMULTModel(BaseTable):
+class QuestionMULTMORM(BaseTable):
     question_id: Mapped[int] = mapped_column(Integer, unique=False, nullable=False,
                                              primary_key=True, autoincrement=True)
 
@@ -72,7 +72,7 @@ class QuestionMULTModel(BaseTable):
         return f'<{self.__class__.__name__}:{self.question_id}>'
 
 
-class QuestionOPENModel(BaseTable):
+class QuestionOPENORM(BaseTable):
     question_id: Mapped[int] = mapped_column(Integer, unique=False, nullable=False,
                                              primary_key=True, autoincrement=True)
 
