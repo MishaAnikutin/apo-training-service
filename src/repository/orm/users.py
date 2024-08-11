@@ -1,23 +1,26 @@
-import datetime
+from datetime import date
 from .base import BaseTable
-from sqlalchemy import Column, Integer, VARCHAR, JSON, DATE, TEXT
+from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import Integer, VARCHAR, Enum, DateTime
+
+from src.models.Subjects import Subjects
 
 
-class UserModel(BaseTable):
+class UserORM(BaseTable):
     __tablename__ = 'users'
 
-    user_id = Column('uid', Integer, unique=True, nullable=False, primary_key=True)
-    username = Column('username', VARCHAR(32), unique=False, nullable=True)
-    reg_date = Column('registration_date', DATE, default=datetime.date.today())
-    upd_date = Column('last_update_date', DATE, onupdate=datetime.date.today())
-    surname = Column('surname', VARCHAR(200), nullable=False)
-    name = Column('name', VARCHAR(200), nullable=False)
-    lastname = Column('lastname', VARCHAR(200), nullable=False)
-    email = Column('email', VARCHAR(200), nullable=False)
-    region = Column('region', VARCHAR(200), nullable=False)
-    subject = Column('subject', VARCHAR(200), nullable=False)
-    user_class = Column('class', VARCHAR(10), nullable=False)
-    school = Column('school', VARCHAR(200), nullable=False)
+    uid: Mapped[int] = mapped_column(Integer, unique=True, nullable=False, primary_key=True)
+    username: Mapped[str] = mapped_column(VARCHAR(32), unique=False, nullable=True)
+    reg_date: Mapped[date] = mapped_column(DateTime, default=date.today())
+    upd_date: Mapped[date] = mapped_column(DateTime, onupdate=date.today(), default=date.today())
+    surname: Mapped[str] = mapped_column(VARCHAR(200), nullable=False)
+    name: Mapped[str] = mapped_column(VARCHAR(200), nullable=False)
+    lastname: Mapped[str] = mapped_column(VARCHAR(200), nullable=False)
+    email: Mapped[str] = mapped_column(VARCHAR(200), nullable=False)
+    region: Mapped[str] = mapped_column(VARCHAR(200), nullable=False)
+    subject: Mapped[Subjects] = mapped_column(Enum(Subjects), nullable=False)
+    user_class: Mapped[str] = mapped_column(VARCHAR(10), nullable=False)
+    school: Mapped[str] = mapped_column(VARCHAR(200), nullable=False)
 
     def __str__(self) -> str:
-        return f'<User:{self.user_id}>'
+        return f'<User:{self.uid}>'

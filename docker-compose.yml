@@ -1,0 +1,33 @@
+version: '3.1'
+
+services:
+  db_postgres:
+    image: postgres:15
+    restart: on-failure
+    volumes:
+      - ./pg_db:/var/lib/postgresql@15/data/
+    env_file:
+      - src/.env
+    ports:
+      - "5432:5432"
+
+  pgadmin:
+    image: dpage/pgadmin4
+    depends_on:
+      - db_postgres
+    env_file:
+      - src/.env
+    ports:
+      - "5555:5555"
+
+  db_mongo:
+    image: mongo:6-jammy
+    ports:
+      - '27017:27017'
+    volumes:
+      - dbdata6:/data/db
+
+volumes:
+  dbdata6:
+  db_postgres:
+    driver: local

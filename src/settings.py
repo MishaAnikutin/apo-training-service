@@ -26,7 +26,8 @@ class DatabaseConfig:
     user: Optional[str] = os.getenv('POSTGRES_USER')
     password: Optional[str] = os.getenv('POSTGRES_PASSWORD', None)
     port: int = int(os.getenv('POSTGRES_PORT', 5432))
-    host: str = os.getenv('POSTGRES_HOST', 'db')
+    # host: str = os.getenv('POSTGRES_HOST', 'db')
+    host: str = 'localhost'
 
     driver: str = 'asyncpg'
     database_system: str = 'postgresql'

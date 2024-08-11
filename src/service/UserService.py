@@ -1,4 +1,7 @@
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from src.models.formModel import FormData
+from src.repository.orm.users import UserORM
 from src.repository.user import UserRepoInterface
 
 from src.models.userModel import User
@@ -6,23 +9,32 @@ from src.models.Subjects import SubjectDataMapper
 
 
 class UserService:
-    def __init__(self, user_repo: UserRepoInterface):
+    def __init__(self, user_repo: UserRepoInterface, session: AsyncSession):
         self.user_repo = user_repo
+        self.session = session
 
-    async def add_user_with_form(self, uid: int, username: str, form_data: FormData, from_telegram: bool):
-        await self.user_repo.add_user(
-            user=User(
-                uid=uid,
-                username=username,
-                form_data=form_data,
-                from_telegram=from_telegram,
-                subject_data=SubjectDataMapper[form_data.main_subject]
-            ),
-            session=None
-        )
+    async def add_user_with_form(self, uid: int, username: str, form_data: FormData, ):
+        async with self.session:
+            await self.user_repo.add_user(
+                transaction=self.session,
+                user=UserORM(
+                    uid=uid,
+                    username=username,
+                    surname=form_data.surname.name,
+                    name=form_data.name.name,
+                    lastname=form_data.lastname.name,
+                    email=form_data.email,
+                    region=form_data.region,
+                    subject=form_data.main_subject,
+                    user_class=form_data.training_class.status,
+                    school=form_data.school
+                )
+            )
 
     async def check_user(self, uid):
-        return await self.user_repo.get_user(session=None, uid=uid) is not None
+        async with self.session:
+            return await self.user_repo.get_user(uid=uid, transaction=self.session) is not None
 
     async def get_user(self, uid) -> User:
-        return await self.user_repo.get_user(session=None, uid=uid)
+        async with self.session:
+            return await self.user_repo.get_user(uid=uid, transaction=self.session)

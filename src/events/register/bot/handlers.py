@@ -163,6 +163,7 @@ async def ask_region(message: Message, state: FSMContext, validation_service: Fr
         await message.answer(f'Мы добавили регион: "{user_region}"')
 
         form_data: FormData = await state.get_data()
+        form_data.region = user_region
         await state.set_data(data=form_data)
 
         await message.answer(text='Напиши свою почту\n\n'
@@ -227,8 +228,7 @@ async def final_form(message: Message, state: FSMContext, user_service: FromDish
             await user_service.add_user_with_form(
                 form_data=await state.get_data(),
                 username=message.chat.username,
-                uid=message.chat.id,
-                from_telegram=True
+                uid=message.chat.id
             )
 
         except Exception as exc:

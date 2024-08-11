@@ -1,18 +1,22 @@
 import asyncio
+
 from aiogram import Dispatcher, Bot
 from aiogram.fsm.storage.memory import MemoryStorage
-
 from dishka.integrations.aiogram import setup_dishka
 
-from src.DI import bot_di
+from src.ioc import bot_container
+from src.settings import BotConfig
 from src.aspects import register_aspects
 from src.events import bot_router, form_router
-from src.settings import BotConfig
+from src.database.postgres.migrations import create_tables
 
 
 async def main():
     dp = Dispatcher(storage=MemoryStorage())
     bot = Bot(token=BotConfig.token)
+
+    # Создаем таблицы
+    await create_tables()
 
     # Регистрируем аспекты
     register_aspects(bot_router)
@@ -23,14 +27,14 @@ async def main():
     # Регистрируем роутер для регистрации (чтобы обойти Middleware)
     dp.include_router(form_router)
 
-    # Внедряем DI
-    setup_dishka(bot_di, dp)
+    # Внедряем IoC
+    setup_dishka(bot_container, dp)
 
     try:
         await dp.start_polling(bot)
 
     finally:
-        await bot_di.close()
+        await bot_container.close()
         await bot.session.close()
 
 
