@@ -1,10 +1,7 @@
-from typing import AsyncGenerator
-
+from typing import AsyncIterable
 from aiogram.types import TelegramObject
-from sqlalchemy.ext.asyncio import AsyncSession
 from dishka import Provider, Scope, from_context, provide
-
-from src.database.postgres.session import AsyncSessionLocal
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from src.repository.regionsRepository import RegionRepository
 from src.repository.user import UserRepoInterface, MockUserRepository
@@ -12,6 +9,8 @@ from src.repository.user import UserRepoInterface, MockUserRepository
 from src.service.ValidationService import ValidationService
 from src.service.UserService import UserService
 from src.service.phraseService import PhraseService
+
+from src.settings import DatabaseConfig
 
 
 class BotProvider(Provider):
@@ -21,8 +20,21 @@ class BotProvider(Provider):
     )
 
     @provide(scope=Scope.APP)
-    async def session(self) -> AsyncGenerator[AsyncSession]:
-        async with AsyncSessionLocal() as session:
+    async def session_maker(self) -> async_sessionmaker[AsyncSession]:
+        # Фабрика сессий
+        return async_sessionmaker(
+            bind=create_async_engine(
+                url=DatabaseConfig.url_str,
+                echo=True,
+                pool_pre_ping=True
+            ),
+            expire_on_commit=False,
+            class_=AsyncSession
+        )
+
+    @provide(scope=Scope.APP)
+    async def session(self, session_maker:  async_sessionmaker[AsyncSession]) -> AsyncIterable[AsyncSession]:
+        async with session_maker() as session:
             try:
                 # Выполняю транзакцию
                 yield session

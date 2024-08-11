@@ -31,16 +31,13 @@ class DatabaseConfig:
     driver: str = 'asyncpg'
     database_system: str = 'postgresql'
 
-    def build_connection_str(self) -> str:
-        """This function build a connection string."""
-
-        return URL.create(
-            drivername=f'{self.database_system}+{self.driver}',
-            username=self.user,
-            database=self.name,
-            password=self.password,
-            port=self.port,
-            host=self.host,
+    url_str = URL.create(
+            drivername=f'{database_system}+{driver}',
+            username=user,
+            database=name,
+            password=password,
+            port=port,
+            host=host,
         ).render_as_string(hide_password=False)
 
 

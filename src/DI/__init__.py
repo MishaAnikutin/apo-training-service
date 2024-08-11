@@ -1,8 +1,7 @@
-from .provider import BotProvider
+from .bot_provider import BotProvider
 from dishka import make_async_container
 
 
-provider = BotProvider()
-DI_Container = make_async_container(provider)
+bot_di = make_async_container(BotProvider())
 
-__all__ = ['DI_Container']
+__all__ = ['bot_di']

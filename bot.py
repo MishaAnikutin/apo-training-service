@@ -4,7 +4,7 @@ from aiogram.fsm.storage.memory import MemoryStorage
 
 from dishka.integrations.aiogram import setup_dishka
 
-from src.DI import DI_Container
+from src.DI import bot_di
 from src.aspects import register_aspects
 from src.events import bot_router, form_router
 from src.settings import BotConfig
@@ -24,13 +24,13 @@ async def main():
     dp.include_router(form_router)
 
     # Внедряем DI
-    setup_dishka(DI_Container, dp)
+    setup_dishka(bot_di, dp)
 
     try:
         await dp.start_polling(bot)
 
     finally:
-        await DI_Container.close()
+        await bot_di.close()
         await bot.session.close()
 
 
