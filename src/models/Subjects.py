@@ -7,6 +7,9 @@ from src.models.english.subjectData import EnglishData
 class Subjects(str, Enum):
     economics = 'Экономика'
     english = 'Английский язык'
+    german = 'Немецкий язык'
+    obzh = 'ОБЖ'
+    social = 'Обществознание'
 
 
 SubjectDataMapper = {

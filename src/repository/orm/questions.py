@@ -1,14 +1,14 @@
 from .base import BaseTable
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy import Integer, Boolean, VARCHAR, Enum, String, SmallInt
+from sqlalchemy import Integer, Boolean, VARCHAR, Enum, String
 
 from src.models.Subjects import Subjects
 
 
 class QuestionYNORM(BaseTable):
-    question_id: Mapped[int] = mapped_column(Integer, unique=False, nullable=False,
-                                             primary_key=True, autoincrement=True)
+    __tablename__ = 'question_yes_no'
 
+    question_id: Mapped[int] = mapped_column(Integer, unique=False, nullable=False, primary_key=True, autoincrement=True)
     ask_text: Mapped[str] = mapped_column(VARCHAR(4096), nullable=False)
     right_answer: Mapped[bool] = mapped_column(Boolean, nullable=False)
     subject: Mapped[Subjects] = mapped_column(Enum(Subjects), nullable=False)
@@ -25,6 +25,8 @@ class QuestionYNORM(BaseTable):
 
 
 class QuestionONEORM(BaseTable):
+    __tablename__ = 'question_one'
+
     question_id: Mapped[int] = mapped_column(Integer, unique=False, nullable=False,
                                              primary_key=True, autoincrement=True)
 
@@ -34,7 +36,7 @@ class QuestionONEORM(BaseTable):
     answer_3: Mapped[str] = mapped_column(String, nullable=False)
     answer_4: Mapped[str] = mapped_column(String, nullable=False)
     answer_5: Mapped[str] = mapped_column(String, nullable=False)
-    right_answer: Mapped[bool] = mapped_column(SmallInt, nullable=False)
+    right_answer: Mapped[bool] = mapped_column(Integer, nullable=False)
     subject: Mapped[Subjects] = mapped_column(Enum(Subjects), nullable=False)
     source: Mapped[str] = mapped_column(String, nullable=True)
     theme: Mapped[str] = mapped_column(String, nullable=False)
@@ -49,6 +51,8 @@ class QuestionONEORM(BaseTable):
 
 
 class QuestionMULTMORM(BaseTable):
+    __tablename__ = 'question_mult'
+
     question_id: Mapped[int] = mapped_column(Integer, unique=False, nullable=False,
                                              primary_key=True, autoincrement=True)
 
@@ -73,6 +77,8 @@ class QuestionMULTMORM(BaseTable):
 
 
 class QuestionOPENORM(BaseTable):
+    __tablename__ = 'question_open'
+
     question_id: Mapped[int] = mapped_column(Integer, unique=False, nullable=False,
                                              primary_key=True, autoincrement=True)
 

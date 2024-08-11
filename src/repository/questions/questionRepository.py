@@ -58,6 +58,8 @@ class QuestionRepository(QuestionRepoInterface):
              values(number_of_decisions=QuestionORM.number_of_decisions + 1))
         )
 
+        await transaction.commit()
+
     async def increase_number_of_right_answers(
             self,
             question_id: int,
@@ -70,3 +72,5 @@ class QuestionRepository(QuestionRepoInterface):
             (QuestionORM.update().
              values(number_of_correct_decisions=QuestionORM.number_of_correct_decisions + 1))
         )
+
+        await transaction.commit()

@@ -1,6 +1,16 @@
-from pydantic import BaseModel
+from typing import Union
 
-from src.models.economics.statisticsData import EconomicsStatisticData
+from .economics.statisticsData import EconomicsStatisticData
+from .english.statisticsData import EnglishStatisticData
 
-EconomicsStatisticData
+
+ThemeStatisticData = Union[
+    EconomicsStatisticData,
+    EnglishStatisticData
+]
+
+
+StatisticsData = list[ThemeStatisticData]
+
+__all__ = ['EconomicsStatisticData', 'EnglishStatisticData']
 
