@@ -16,10 +16,10 @@ from src.repository.files.photoRepository import PhotoRepository
 from .keyboards import StartKeyboard, QuestionKeyboard, ResetKeyboard, ReportKeyboard
 
 
-train_router = Router()
+train_bot_router = Router()
 
 
-@train_router.message(Command("/train"))
+@train_bot_router.message(Command("/train"))
 @inject
 async def start_train(
         message: types.Message,
@@ -42,7 +42,7 @@ async def start_train(
     await state.set_state(TrainingStates.AskQuestion)
 
 
-@train_router.message(TrainingStates.AskQuestion)
+@train_bot_router.message(TrainingStates.AskQuestion)
 @inject
 async def ask_question(
         message: types.Message,
