@@ -1,9 +1,10 @@
 from typing import Union
+from random import choice
 from sqlalchemy import select, and_, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.models import TrainFilterData, Subjects
-from src.models.questionType import QuestionType
+from src.models.questionData import QuestionType
 from src.repository.orm import question_orm_mapper, QuestionOPENORM, QuestionMULTMORM, QuestionONEORM, QuestionYNORM
 from .questionRepoInterface import QuestionRepoInterface
 
@@ -13,11 +14,11 @@ class QuestionRepository(QuestionRepoInterface):
             self,
             transaction: AsyncSession,
             subject: Subjects,
-            question_type: QuestionType,
+            question_types: list[QuestionType],
             user_filter: TrainFilterData
     ) -> Union[QuestionYNORM, QuestionOPENORM, QuestionMULTMORM, QuestionONEORM, None]:
 
-        QuestionORM = question_orm_mapper[question_type]
+        QuestionORM = question_orm_mapper[choice(question_types)]
 
         return await transaction.scalar(
             select(QuestionORM)

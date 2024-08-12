@@ -1,18 +1,17 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from src.models.userModel import User
 
-
+# TODO
 class StatisticsRepoInterface(ABC):
     @abstractmethod
     async def new(self, session, uid):
         ...
 
     @abstractmethod
-    async def get(self, session, uid) -> Optional[User]:
+    async def get(self, session, uid):
         ...
 
     @abstractmethod
-    async def increase_theme(self, session, uid, theme) -> None:
+    async def update(self, session, uid, theme) -> None:
         ...

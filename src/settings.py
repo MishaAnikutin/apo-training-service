@@ -19,7 +19,7 @@ class NGINXConfig:
 
 
 @dataclass
-class DatabaseConfig:
+class PostgresConfig:
     """Database connection variables."""
 
     name: Optional[str] = os.getenv('POSTGRES_DATABASE')
@@ -43,6 +43,16 @@ class DatabaseConfig:
 
 
 @dataclass
+class MongoDBConfig:
+    host: str = os.getenv("MONGODB_HOST")
+    port: str = os.getenv("MONGODB_PORT")
+    database: str = os.getenv("DATABASE")
+    filter_collection: str = os.getenv("FILTER_COLLECTION")
+    statistics_collection: str = os.getenv("STATISTICS_COLLECTION")
+    url: str = f"mongodb://{host}:{port}"
+
+
+@dataclass
 class AppConfig:
     """Bot configuration."""
 
@@ -61,6 +71,7 @@ class BotConfig:
     admins = os.getenv("ADMINS").split()
     report_chat_id = os.getenv("REPORT_CHAT_ID")
 
+
 @dataclass
 class Configuration:
     """All in one configuration's class."""
@@ -68,8 +79,6 @@ class Configuration:
     debug = bool(os.getenv('DEBUG'))
     logging_level = int(os.getenv('LOGGING_LEVEL', logging.INFO))
 
-    db = DatabaseConfig()
+    postgres = PostgresConfig()
+    mongo = MongoDBConfig()
     app = AppConfig()
-
-
-configuration = Configuration()

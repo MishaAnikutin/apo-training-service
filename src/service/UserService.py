@@ -1,11 +1,8 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.models.formModel import FormData
 from src.repository.orm.users import UserORM
+from src.models import User, Subjects, FormData
 from src.repository.user import UserRepoInterface
-
-from src.models.userModel import User
-from src.models.Subjects import SubjectDataMapper
 
 
 class UserService:
@@ -13,7 +10,7 @@ class UserService:
         self.user_repo = user_repo
         self.session = session
 
-    async def add_user_with_form(self, uid: int, username: str, form_data: FormData, ):
+    async def add_user_with_form(self, uid: int, username: str, form_data: FormData):
         async with self.session:
             await self.user_repo.add_user(
                 transaction=self.session,
@@ -31,10 +28,14 @@ class UserService:
                 )
             )
 
-    async def check_user(self, uid):
+    async def check_user(self, uid: int):
         async with self.session:
             return await self.user_repo.get_user(uid=uid, transaction=self.session) is not None
 
-    async def get_user(self, uid) -> User:
+    async def get_user(self, uid: int) -> User:
         async with self.session:
             return await self.user_repo.get_user(uid=uid, transaction=self.session)
+
+    async def get_subject(self, uid: int) -> Subjects:
+        async with self.session:
+            return (await self.user_repo.get_user(uid=uid, transaction=self.session)).subject

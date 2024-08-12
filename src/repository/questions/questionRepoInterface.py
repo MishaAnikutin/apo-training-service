@@ -1,9 +1,9 @@
-from typing import Optional
+from typing import Union
 from abc import ABC, abstractmethod
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.models.Subjects import Subjects
-from src.models.questionType import QuestionType
+from src.models.questionData import QuestionType
 from src.repository.orm.questions import QuestionYNORM, QuestionONEORM, QuestionMULTMORM, QuestionOPENORM
 from src.models import TrainFilterData
 
@@ -13,9 +13,9 @@ class QuestionRepoInterface(ABC):
     async def get_random_question(
             self, transaction: AsyncSession,
             subject: Subjects,
-            question_type: QuestionType,
+            question_types: list[QuestionType],
             user_filter: TrainFilterData
-    ) -> Optional[QuestionYNORM]:
+    ) -> Union[QuestionYNORM, QuestionONEORM, QuestionMULTMORM, QuestionOPENORM, None]:
         ...
 
     @abstractmethod

@@ -1,7 +1,7 @@
 from typing import Optional
 
+from src.models.statisticsData import StatisticsData
 from .statisticsRepoInterface import StatisticsRepoInterface
-from src.models.statisticsModel import ThemeStatisticData, StatisticsData
 
 
 class MockStatisticsRepository(StatisticsRepoInterface):
@@ -14,5 +14,5 @@ class MockStatisticsRepository(StatisticsRepoInterface):
     async def get(self, session, uid) -> Optional[StatisticsData]:
         ...
 
-    async def increase_theme(self, session, uid, theme) -> None:
+    async def update(self, session, uid, theme) -> None:
         ...

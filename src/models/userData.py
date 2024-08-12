@@ -1,7 +1,7 @@
 from typing import Union
 from pydantic import BaseModel
 
-from src.models.formModel import FormData
+from src.models.formData import FormData
 from .economics.subjectData import EconomicsData
 from .english.subjectData import EnglishData
 

@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field
 
 from .sourceData import EconomicsSourceData
 from .themeData import EconomicsThemeData
-from src.models.questionType import QuestionType
+from src.models.questionData import QuestionType
 
 
 class EconomicsTrainFilterData(BaseModel):
