@@ -2,7 +2,7 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from src.events import api_router
+from src.use_cases import api_router
 
 app = FastAPI(
     title="apo-web-api",

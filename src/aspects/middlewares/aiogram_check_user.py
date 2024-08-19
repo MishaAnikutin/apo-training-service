@@ -4,8 +4,8 @@ from aiogram.types import Message
 from aiogram import BaseMiddleware
 from dishka.integrations.aiogram import FromDishka
 
-from src.events.register.bot.states import FormStates
-from src.events.register.bot.handlers import form
+from src.use_cases.register.bot.states import FormStates
+from src.use_cases.register.bot.handlers import form
 from src.service.UserService import UserService
 from dishka.integrations.base import wrap_injection
 

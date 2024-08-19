@@ -1,8 +1,10 @@
+from typing import Union
+
 from .base import BaseTable
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import Integer, Boolean, VARCHAR, Enum, String
 
-from src.models.Subjects import Subjects
+from src.models import Subjects
 
 
 class QuestionYNORM(BaseTable):
@@ -95,3 +97,6 @@ class QuestionOPENORM(BaseTable):
 
     def __str__(self) -> str:
         return f'<{self.__class__.__name__}:{self.question_id}>'
+
+
+QuestionORM = Union[QuestionYNORM, QuestionONEORM, QuestionMULTMORM, QuestionOPENORM]

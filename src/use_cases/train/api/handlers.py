@@ -18,11 +18,12 @@ async def get_random_question(
         user_id: int,
         service: TrainingService = FromDishka[TrainingService]
 ) -> QuestionData:
-    try:
-        return await service.get_random_question(uid=user_id)
+    question = await service.get_random_question(uid=user_id)
 
-    except:
+    if question is None:
         return HTTPException(status_code=404, detail="Фильтры слишком жесткие. Таких задач нет")
+
+    return question
 
 
 @train_api_router.post("/check")
@@ -34,6 +35,4 @@ async def check_answer(
         service: TrainingService = FromDishka[TrainingService]
 ) -> dict[str, bool]:
 
-    is_ok = await service.check_answer(uid=user_id, question_data=question_data, answer=user_answer)
-
-    return {"result": is_ok}
+    return {"result": await service.check_answer(uid=user_id, question_data=question_data, answer=user_answer)}

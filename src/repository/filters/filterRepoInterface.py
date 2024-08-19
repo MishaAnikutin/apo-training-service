@@ -1,17 +1,33 @@
 from abc import ABC, abstractmethod
 
-from src.database.mongo.session import AsyncMongoSession
+from motor.motor_asyncio import AsyncIOMotorClientSession
 
 
 class FilterRepoInterface(ABC):
     @abstractmethod
-    async def new(self, uid, session: AsyncMongoSession):
+    async def new(self, uid, session: AsyncIOMotorClientSession):
         ...
 
     @abstractmethod
-    async def get(self, uid, session: AsyncMongoSession):
+    async def get(self, uid, session: AsyncIOMotorClientSession):
         ...
 
     @abstractmethod
-    async def update(self, uid, new_filter, session: AsyncMongoSession):
+    async def add(
+            self,
+            uid: int,
+            filter_key: str,
+            filter_value: str,
+            session: AsyncIOMotorClientSession,
+    ):
+        ...
+
+    @abstractmethod
+    async def remove(
+            self,
+            uid: int,
+            filter_key: str,
+            filter_value: str,
+            session: AsyncIOMotorClientSession,
+    ):
         ...

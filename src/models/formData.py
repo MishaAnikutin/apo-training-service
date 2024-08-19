@@ -1,20 +1,24 @@
 from typing import Union
 from pydantic import BaseModel, Field, EmailStr, field_validator
 
-from src.models.Subjects import Subjects
+from src.models.questionData import Subjects
 
 
 class UserClass(BaseModel):
-    status: Union[str, int]
+    status: str
 
     @field_validator('status')
     def validate_status(cls, status):
         if isinstance(status, str) and status.lower() == "окончил":
             return status
-        elif isinstance(status, (int, str)) and str(status).isdigit() and 12 > int(status) > 0:
-            return int(status)
-        else:
+        try:
+            int(status)
+        except:
             raise ValueError("Класс может быть либо числом, либо строкой 'окончил'.")
+
+        else:
+            if 12 > int(status) > 0:
+                return status
 
 
 class Named(BaseModel):

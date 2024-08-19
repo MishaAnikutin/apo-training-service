@@ -24,9 +24,8 @@ class PostgresConfig:
 
     name: Optional[str] = os.getenv('POSTGRES_DATABASE')
     user: Optional[str] = os.getenv('POSTGRES_USER')
-    password: Optional[str] = os.getenv('POSTGRES_PASSWORD', None)
+    password: Optional[str] = os.getenv('POSTGRES_PASSWORD')
     port: int = int(os.getenv('POSTGRES_PORT', 5432))
-    # host: str = os.getenv('POSTGRES_HOST', 'db')
     host: str = 'localhost'
 
     driver: str = 'asyncpg'
@@ -44,20 +43,22 @@ class PostgresConfig:
 
 @dataclass
 class MongoDBConfig:
-    host: str = os.getenv("MONGODB_HOST")
-    port: str = os.getenv("MONGODB_PORT")
-    database: str = os.getenv("DATABASE")
+    host: str = os.getenv("MONGO_HOST", 'localhost')
+    port: int = os.getenv("MONGO_PORT", 27017)
+    database: str = os.getenv("MONGO_INITDB_DATABASE")
+    username: str = os.getenv("MONGO_INITDB_ROOT_USERNAME")
+    password: str = os.getenv("MONGO_INITDB_ROOT_PASSWORD")
     filter_collection: str = os.getenv("FILTER_COLLECTION")
     statistics_collection: str = os.getenv("STATISTICS_COLLECTION")
-    url: str = f"mongodb://{host}:{port}"
+    url: str = f"mongodb://{username}:{password}@{host}:{port}"
 
 
 @dataclass
 class AppConfig:
     """Bot configuration."""
 
-    title = "ad-olimp.org publications"
-    description = "Сервис для работы с публикациями в ленту"
+    title = "APO Training Service"
+    description = "Сервис для тренировок АПО"
     version = "1.0"
     root_path = NGINXConfig.APP_PREFIX
 

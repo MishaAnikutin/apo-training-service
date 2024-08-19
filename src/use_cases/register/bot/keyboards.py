@@ -1,6 +1,6 @@
 from aiogram.utils.keyboard import ReplyKeyboardBuilder, KeyboardButton
 
-from src.models.Subjects import Subjects
+from src.models import Subjects
 
 
 async def subjectsKeyboard():

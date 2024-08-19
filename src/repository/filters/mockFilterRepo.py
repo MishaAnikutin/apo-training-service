@@ -1,14 +1,17 @@
-from src.database.mongo.session import AsyncMongoSession
+from motor.motor_asyncio import AsyncIOMotorClientSession
 
 from .filterRepoInterface import FilterRepoInterface
 
 
 class MockFilterRepo(FilterRepoInterface):
-    async def new(self, uid, session: AsyncMongoSession):
+    async def new(self, uid, session: AsyncIOMotorClientSession):
         pass
 
-    async def get(self, uid, session: AsyncMongoSession):
+    async def add(self, uid: int, filter_key: str, filter_value: str, session: AsyncIOMotorClientSession):
         pass
 
-    async def update(self, uid, new_filter, session: AsyncMongoSession):
+    async def remove(self, uid: int, filter_key: str, filter_value: str, session: AsyncIOMotorClientSession):
+        pass
+
+    async def get(self, uid, session: AsyncIOMotorClientSession):
         pass

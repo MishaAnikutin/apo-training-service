@@ -1,34 +1,31 @@
 from enum import Enum
 from typing import Union, Optional
-
 from pydantic import BaseModel
 
-from .english.themeData import EnglishThemeData
-from .english.sourceData import EnglishSourceData
-from .economics.themeData import EconomicsThemeData
-from .economics.sourceData import EconomicsSourceData
+from .questionType import QuestionType
+from .english import EnglishData, EnglishThemeData, EnglishSourceData
+from .economics import EconomicsData, EconomicsSourceData, EconomicsThemeData
 
 
-class QuestionType(str, Enum):
-    yes_no = 'Задачи да/нет-ки'
-    one = 'Задачи с одним вариантом ответа'
-    multiple = 'Задачи с несколькими вариантами ответа'
-    open = 'Задачи с открытым ответом'
+class Subjects(str, Enum):
+    economics = 'Экономика'
+    english = 'Английский язык'
+    german = 'Немецкий язык'
+    obzh = 'ОБЖ'
+    social = 'Обществознание'
 
 
-matching_points = {
-    QuestionType.yes_no: 1,
-    QuestionType.one: 3,
-    QuestionType.multiple: 5,
-    QuestionType.open: 7
+SubjectDataMapper = {
+    Subjects.economics: EconomicsData(),
+    Subjects.english: EnglishData()
 }
-
 
 ThemeData = Union[EnglishThemeData, EconomicsThemeData]
 SourceData = Union[EnglishSourceData, EconomicsSourceData]
 
 
 class QuestionData(BaseModel):
+    subject: Subjects
     question_id: int
     question_type: QuestionType
     text: str
@@ -40,4 +37,3 @@ class QuestionData(BaseModel):
     right_answer: Union[str, int]
     theme: ThemeData
     source: SourceData
-    photo_url: Optional[str]

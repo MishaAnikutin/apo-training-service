@@ -1,17 +1,19 @@
 import logging
+from typing import Optional
+
 from sqlalchemy.ext.asyncio import AsyncSession
-from src.database.mongo.session import AsyncMongoSession
+from motor.motor_asyncio import AsyncIOMotorClientSession
 
-from src.models import TrainFilterData
-from src.models.questionData import ThemeData, QuestionType
+from src.models import TrainFilterData, QuestionType
+from src.models.questionData import ThemeData
 
-from src.repository.filters import FilterRepoInterface
+from src.repository.orm import QuestionORM
 from src.repository.user import UserRepoInterface
+from src.repository.filters import FilterRepoInterface
 from src.repository.questions import QuestionRepoInterface
 from src.repository.statistics import StatisticsRepoInterface
 
 from .sagaInterface import SAGAInterface
-
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +22,7 @@ class QuestionSagaOrchestrator(SAGAInterface):
     def __init__(
             self,
             postgres_session: AsyncSession,
-            mongo_session: AsyncMongoSession,
+            mongo_session: AsyncIOMotorClientSession,
             filter_repo: FilterRepoInterface,
             question_repo: QuestionRepoInterface,
             user_repo: UserRepoInterface
@@ -32,11 +34,15 @@ class QuestionSagaOrchestrator(SAGAInterface):
         self._mongo_session = mongo_session
         self._postgres_session = postgres_session
 
-    async def execute(self, uid: int):
+    async def execute(self, uid: int) -> tuple[Optional[QuestionORM], QuestionType]:
         # Получаем фильтры пользователя
-        async with self._mongo_session as transaction:
+        async with self._mongo_session as session:
             logger.info(f"[SAGA] {uid=} получаем фильтры")
-            user_filters: TrainFilterData = await self._filter_repo.get(uid=uid, session=transaction)
+            user_filters: TrainFilterData = await self._filter_repo.get(uid=uid, session=session)
+
+            if user_filters is None:
+                await self._filter_repo.new(uid=uid, session=session)
+                user_filters: TrainFilterData = await self._filter_repo.get(uid=uid, session=session)
 
         # Получаем предмет пользователя и случайный вопрос
         async with self._postgres_session as transaction:
@@ -65,7 +71,7 @@ class AnswerSagaOrchestrator(SAGAInterface):
             question_repo: QuestionRepoInterface,
             statistics_repo: StatisticsRepoInterface,
             postgres_session: AsyncSession,
-            mongo_session: AsyncMongoSession
+            mongo_session: AsyncIOMotorClientSession
 
     ):
         self._user_repo = user_repo

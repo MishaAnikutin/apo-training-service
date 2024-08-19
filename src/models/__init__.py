@@ -1,16 +1,8 @@
-from typing import Union
-
-from .economics.trainFilterData import EconomicsTrainFilterData
-from .english.trainFilterData import EnglishTrainFilterData
-
-from src.models.userData import User
-from src.models.Subjects import Subjects
-from src.models.formData import FormData
+from .userData import User
+from .questionData import Subjects, QuestionData
+from .questionType import QuestionType
+from .formData import FormData
+from .filterData import TrainFilterData
 
 
-TrainFilterData = Union[
-    EconomicsTrainFilterData,
-    EnglishTrainFilterData
-]
-
-__all__ = ['User', 'Subjects', 'FormData', 'TrainFilterData']
+__all__ = ('User', 'Subjects', 'FormData', 'TrainFilterData', 'QuestionType', 'QuestionData')

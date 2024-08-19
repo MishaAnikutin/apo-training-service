@@ -12,5 +12,4 @@ ThemeStatisticData = Union[
 
 StatisticsData = list[ThemeStatisticData]
 
-__all__ = ['EconomicsStatisticData', 'EnglishStatisticData']
-
+__all__ = ['EconomicsStatisticData', 'EnglishStatisticData', 'StatisticsData']

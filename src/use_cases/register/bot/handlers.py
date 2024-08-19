@@ -5,11 +5,9 @@ from aiogram.types import Message, ReplyKeyboardRemove
 from dishka.integrations.aiogram import inject, FromDishka
 
 from src.settings import BotConfig
-from src.models.formModel import FormData
 from src.service.UserService import UserService
-
-from src.models.formModel import Named, UserClass
-from src.service.ValidationService import ValidationService
+from src.service.validationService import ValidationService
+from src.models.formData import Named, UserClass, FormData
 
 from .states import FormStates
 from .keyboards import subjectsKeyboard, yesNoKeyboard

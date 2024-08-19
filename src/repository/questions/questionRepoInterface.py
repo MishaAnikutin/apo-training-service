@@ -1,10 +1,9 @@
-from typing import Union
+from typing import Optional
 from abc import ABC, abstractmethod
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.models.Subjects import Subjects
-from src.models.questionData import QuestionType
-from src.repository.orm.questions import QuestionYNORM, QuestionONEORM, QuestionMULTMORM, QuestionOPENORM
+from src.models import QuestionType, Subjects
+from src.repository.orm.questions import QuestionORM
 from src.models import TrainFilterData
 
 
@@ -15,7 +14,7 @@ class QuestionRepoInterface(ABC):
             subject: Subjects,
             question_types: list[QuestionType],
             user_filter: TrainFilterData
-    ) -> Union[QuestionYNORM, QuestionONEORM, QuestionMULTMORM, QuestionOPENORM, None]:
+    ) -> Optional[QuestionORM]:
         ...
 
     @abstractmethod

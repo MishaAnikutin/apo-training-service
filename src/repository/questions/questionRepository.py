@@ -1,11 +1,11 @@
-from typing import Union
 from random import choice
+from typing import Optional
 from sqlalchemy import select, and_, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.models import TrainFilterData, Subjects
-from src.models.questionData import QuestionType
-from src.repository.orm import question_orm_mapper, QuestionOPENORM, QuestionMULTMORM, QuestionONEORM, QuestionYNORM
+from src.models import QuestionType, Subjects, TrainFilterData
+from src.repository.orm import question_orm_mapper, QuestionORM
+
 from .questionRepoInterface import QuestionRepoInterface
 
 
@@ -16,21 +16,23 @@ class QuestionRepository(QuestionRepoInterface):
             subject: Subjects,
             question_types: list[QuestionType],
             user_filter: TrainFilterData
-    ) -> Union[QuestionYNORM, QuestionOPENORM, QuestionMULTMORM, QuestionONEORM, None]:
+    ) -> tuple[Optional[QuestionORM], QuestionType]:
+        question_type = choice(question_types)
+        QuestionModel = question_orm_mapper[question_type]
 
-        QuestionORM = question_orm_mapper[choice(question_types)]
-
-        return await transaction.scalar(
-            select(QuestionORM)
+        question = await transaction.scalar(
+            select(QuestionModel)
             .where(and_(
-                QuestionORM.subject == subject,
-                QuestionORM.theme.in_(user_filter.theme),
-                QuestionORM.source.in_(user_filter.source),
-                QuestionORM.may_in_subway.in_(user_filter.may_in_subway)
+                QuestionModel.subject == subject,
+                QuestionModel.theme.in_(user_filter.theme),
+                QuestionModel.source.in_(user_filter.source),
+                QuestionModel.may_in_subway.in_(user_filter.may_in_subway)
                 ))
             .order_by(func.random())
             .limit(1)
         )
+
+        return question, question_type
 
     async def get_answer(
             self,
@@ -38,11 +40,11 @@ class QuestionRepository(QuestionRepoInterface):
             transaction: AsyncSession,
             question_type: QuestionType,
     ) -> str:
-        QuestionORM = question_orm_mapper[question_type]
+        QuestionModel = question_orm_mapper[question_type]
 
         return await transaction.scalar(
-            select(QuestionORM.right_answer)
-            .where(QuestionORM.question_id == question_id)
+            select(QuestionModel.right_answer)
+            .where(QuestionModel.question_id == question_id)
             .limit(1)
         )
 
@@ -52,11 +54,11 @@ class QuestionRepository(QuestionRepoInterface):
             transaction: AsyncSession,
             question_type: QuestionType
     ) -> str:
-        QuestionORM = question_orm_mapper[question_type]
+        QuestionModel = question_orm_mapper[question_type]
 
         await transaction.execute(
-            (QuestionORM.update().
-             values(number_of_decisions=QuestionORM.number_of_decisions + 1))
+            (QuestionModel.update().
+             values(number_of_decisions=QuestionModel.number_of_decisions + 1))
         )
 
         await transaction.commit()
@@ -67,11 +69,11 @@ class QuestionRepository(QuestionRepoInterface):
             transaction: AsyncSession,
             question_type: QuestionType
     ) -> str:
-        QuestionORM = question_orm_mapper[question_type]
+        QuestionModel = question_orm_mapper[question_type]
 
         await transaction.execute(
-            (QuestionORM.update().
-             values(number_of_correct_decisions=QuestionORM.number_of_correct_decisions + 1))
+            (QuestionModel.update().
+             values(number_of_correct_decisions=QuestionModel.number_of_correct_decisions + 1))
         )
 
         await transaction.commit()

@@ -3,7 +3,7 @@ from .base import BaseTable
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import Integer, VARCHAR, Enum, DateTime
 
-from src.models.Subjects import Subjects
+from src.models import Subjects
 
 
 class UserORM(BaseTable):
