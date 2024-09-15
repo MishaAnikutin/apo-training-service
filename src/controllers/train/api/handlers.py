@@ -1,26 +1,24 @@
-from dishka import FromDishka
-from fastapi import APIRouter, HTTPException
-from dishka.integrations.fastapi import inject
+from typing import Union
 
-from src.models.questionData import QuestionData
+from fastapi import APIRouter, HTTPException, Depends
+from dishka.integrations.fastapi import inject, FromDishka
+
+from src.models.questionData import QuestionData, Subjects
 from src.service.training.trainingService import TrainingService
 
 
-train_api_router = APIRouter(
-    prefix="/train",
-    tags=["Train"]
-)
+train_api_router = APIRouter(prefix="/train")
 
 
-@train_api_router.post("/")
+@train_api_router.get("/")
 @inject
 async def get_random_question(
         user_id: int,
+        subject: Subjects,
         service: TrainingService = FromDishka[TrainingService]
 ) -> QuestionData:
-    question = await service.get_random_question(uid=user_id)
 
-    if question is None:
+    if (question := await service.get_random_question(uid=user_id, subject=subject)) is None:
         return HTTPException(status_code=404, detail="Фильтры слишком жесткие. Таких задач нет")
 
     return question
@@ -30,9 +28,15 @@ async def get_random_question(
 @inject
 async def check_answer(
         user_id: int,
+        subject: Subjects,
         question_data: QuestionData,
-        user_answer: str | list[str],
+        user_answer: Union[str, list[str]],
         service: TrainingService = FromDishka[TrainingService]
-) -> dict[str, bool]:
+) -> bool:
 
-    return {"result": await service.check_answer(uid=user_id, question_data=question_data, answer=user_answer)}
+    return await service.check_answer(
+        uid=user_id,
+        question_data=question_data,
+        answer=user_answer,
+        subject=subject
+    )

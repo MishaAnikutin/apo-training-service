@@ -24,20 +24,6 @@ ThemeData = Union[EnglishThemeData, EconomicsThemeData]
 SourceData = Union[EnglishSourceData, EconomicsSourceData]
 
 
-# class QuestionData(BaseModel):
-#     subject: Subjects
-#     question_id: int
-#     question_type: QuestionType
-#     text: str
-#     answer_1: Optional[str]
-#     answer_2: Optional[str]
-#     answer_3: Optional[str]
-#     answer_4: Optional[str]
-#     answer_5: Optional[str]
-#     right_answer: Union[str, int]
-#     theme: ThemeData
-#     source: SourceData
-
 class QuestionData(BaseModel):
     subject: Subjects
     question_id: int

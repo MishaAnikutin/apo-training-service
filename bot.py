@@ -7,7 +7,7 @@ from aiogram.client.default import DefaultBotProperties
 
 from dishka.integrations.aiogram import setup_dishka
 
-from src.ioc import bot_container
+from src.ioc import container
 from src.settings import BotConfig
 from src.aspects import register_aspects
 from src.database.postgres.migrations import create_tables
@@ -34,13 +34,13 @@ async def main():
     dp.include_router(form_router)
 
     # Внедряем IoC
-    setup_dishka(container=bot_container, router=dp)
+    setup_dishka(container=container, router=dp)
 
     try:
         await dp.start_polling(bot)
 
     finally:
-        await bot_container.close()
+        await container.close()
         await bot.session.close()
 
 

@@ -3,6 +3,8 @@ from enum import Enum
 from difflib import SequenceMatcher
 from string import punctuation, ascii_lowercase
 
+from src.repository import RegionRepository
+
 
 class Languages(str, Enum):
     rus = 'RUS'
@@ -23,7 +25,7 @@ class ValidationService:
 
     min_similar_coef = 0.5
 
-    def __init__(self, regions_repo):
+    def __init__(self, regions_repo: RegionRepository):
         self.regions_repo = regions_repo
 
     def define_language(self, letter: str):
