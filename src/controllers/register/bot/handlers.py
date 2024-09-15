@@ -5,9 +5,12 @@ from aiogram.types import Message, ReplyKeyboardRemove
 from dishka.integrations.aiogram import inject, FromDishka
 
 from src.settings import BotConfig
-from src.service.UserService import UserService
-from src.service.validationService import ValidationService
 from src.models.formData import Named, UserClass, FormData
+from src.service.userService import UserService
+from src.service.validationService import ValidationService
+from src.service.statisticsService import StatisticsService
+from src.service.filterService import FilterService
+
 
 from .states import FormStates
 from .keyboards import subjectsKeyboard, yesNoKeyboard
@@ -218,16 +221,23 @@ async def ask_personal_data(message: Message, state: FSMContext):
 
 @form_router.message(FormStates.FinalState)
 @inject
-async def final_form(message: Message, state: FSMContext, user_service: FromDishka[UserService]) -> None:
+async def final_form(
+        message: Message, state: FSMContext,
+        user_service: FromDishka[UserService],
+        filter_service: FromDishka[FilterService],
+        statistics_service: FromDishka[StatisticsService]
+) -> None:
     answer = message.text.lower().strip()
+
+    form_data: FormData = await state.get_data()
+    subject = form_data.main_subject
+    uid = message.chat.id
 
     if answer in {'да', 'да)', 'ага', 'угу'}:
         try:
-            await user_service.add_user_with_form(
-                form_data=await state.get_data(),
-                username=message.chat.username,
-                uid=message.chat.id
-            )
+            await user_service.add_user_with_form(form_data=form_data, username=message.chat.username, uid=uid)
+            await filter_service.new(uid=uid, subject=subject)
+            await statistics_service.new(uid=uid, subject=subject)
 
         except Exception as exc:
             await message.answer(text=ERROR_MESSAGE_WITH_TECHNICAL_SUPPORT.format(exc, BotConfig.technical_support))

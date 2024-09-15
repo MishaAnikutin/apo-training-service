@@ -34,7 +34,22 @@ class UserService:
 
     async def get_user(self, uid: int) -> User:
         async with self.session:
-            return await self.user_repo.get_user(uid=uid, transaction=self.session)
+            data = await self.user_repo.get_user(uid=uid, transaction=self.session)
+
+        if data:
+            return User(
+                uid=data.uid,
+                username=data.username,
+                surname=data.surname,
+                name=data.name,
+                lastname=data.lastname,
+                email=data.email,
+                region=data.region,
+                subject=data.subject,
+                user_class=data.user_class,
+                school=data.school,
+            )
+
 
     async def get_subject(self, uid: int) -> Subjects:
         async with self.session:

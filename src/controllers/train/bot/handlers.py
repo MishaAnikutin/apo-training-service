@@ -6,8 +6,9 @@ from aiogram.fsm.context import FSMContext
 from dishka.integrations.aiogram import inject
 
 from src.models.trainData import TrainData
-from src.models import QuestionType, QuestionData
+from src.models import QuestionType, QuestionData, User
 from src.repository.files import PhotoRepository
+from src.service.userService import UserService
 from src.service.filterService import FilterService
 from src.service.training.trainingService import TrainingService
 
@@ -24,6 +25,7 @@ train_bot_router = Router()
 @inject
 async def start_training(
         message: types.Message, state: FSMContext, bot: Bot,
+        user_service: FromDishka[UserService],
         filter_service: FromDishka[FilterService],
         train_service: FromDishka[TrainingService],
         photo_repo: FromDishka[PhotoRepository]
@@ -37,7 +39,9 @@ async def start_training(
                                         f'{mode_text}\n\n'
                                         f'<i>Напиши /stop, если захочешь остановить тренировку</i>')
 
-    await state.set_data(data=TrainData())
+    user: User = await user_service.get_user(uid=message.chat.id)
+
+    await state.set_data(data=TrainData(subject=user.subject))
     await ask_question(message=message, state=state, bot=bot, train_service=train_service, photo_repo=photo_repo)
 
 
@@ -60,8 +64,10 @@ async def ask_question(
         train_service: TrainingService,
         photo_repo: PhotoRepository
 ) -> Message:
+    data: TrainData = await state.get_data()
+
     # получаем случайный вопрос
-    question: QuestionData = await train_service.get_random_question(message.chat.id)
+    question: QuestionData = await train_service.get_random_question(message.chat.id, subject=data.subject)
 
     # Если вернул None, то фильтр слишком жесткий
     if question is None:
@@ -71,8 +77,15 @@ async def ask_question(
             reply_markup=await StartKeyboard()
         )
 
-    question_text = QUESTION_TEXT.format(question_id=question.question_id, source=question.source.value,
-                                         theme=question.theme.value, text=question.text)
+    # FIXME
+    question_text = QUESTION_TEXT.format(
+        question_id=question.question_id,
+        source=question.source,
+        theme=question.theme,
+        # source=question.source.value,
+        # theme=question.theme.value,
+        text=question.text
+    )
 
     markup = await QuestionKeyboard(question=question)
 
@@ -80,8 +93,7 @@ async def ask_question(
         await message.answer(text=question_text, reply_markup=markup)
 
     else:
-        loading_message = await message.answer(text='<i>Загружаем фотографию, подождите немного...</i>',
-                                               )
+        loading_message = await message.answer(text='<i>Загружаем фотографию, подождите немного...</i>')
 
         photo = await photo_repo.read(question_id=question.question_id, question_type=question.question_type)
 
@@ -147,12 +159,14 @@ async def ans_questions(
     is_right = await train_service.check_answer(
         answer=answer,
         uid=message.chat.id,
-        question_data=train_data.question
+        question_data=train_data.question,
+        subject=train_data.subject
     )
 
     if is_right:
         # message =
         await message.answer(text='Верно!', reply_markup=await ReportKeyboard())
+        train_data.right_answers += 1
 
     else:
         right_answer = (response_list[train_data.question.right_answer]
@@ -166,6 +180,8 @@ async def ans_questions(
             reply_markup=await ReportKeyboard()
         )
 
+    train_data.total_answers += 1
+    await state.set_data(data=train_data)
     await state.set_state(TrainingStates.AskQuestion)
     await ask_question(message, state, bot, train_service=train_service, photo_repo=photo_repo)
 
@@ -207,7 +223,10 @@ async def end_mult_ans(
 
     ans_text = ''.join(sorted(train_data.user_multiple_answer))
 
-    is_right = await train_service.check_answer(uid=message.chat.id, question_data=train_data.question, answer=ans_text)
+    is_right = await train_service.check_answer(
+        uid=message.chat.id, question_data=train_data.question,
+        answer=ans_text, subject=train_data.subject
+    )
 
     if is_right:
         await message.answer(text='Верно!', reply_markup=await ReportKeyboard())

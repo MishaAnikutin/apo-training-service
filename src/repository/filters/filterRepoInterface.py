@@ -2,23 +2,30 @@ from abc import ABC, abstractmethod
 
 from motor.motor_asyncio import AsyncIOMotorClientSession
 
+from src.models import Subjects
+
 
 class FilterRepoInterface(ABC):
     @abstractmethod
-    async def new(self, uid, session: AsyncIOMotorClientSession):
+    async def new(self, uid, subject: str, ):
         ...
 
     @abstractmethod
-    async def get(self, uid, session: AsyncIOMotorClientSession):
+    async def add_subject(self, subject: Subjects, uid: int, ):
+        ...
+
+    @abstractmethod
+    async def get(self, uid, subject: Subjects, ):
         ...
 
     @abstractmethod
     async def add(
             self,
             uid: int,
+            subject: Subjects,
             filter_key: str,
             filter_value: str,
-            session: AsyncIOMotorClientSession,
+
     ):
         ...
 
@@ -26,8 +33,9 @@ class FilterRepoInterface(ABC):
     async def remove(
             self,
             uid: int,
+            subject: Subjects,
             filter_key: str,
             filter_value: str,
-            session: AsyncIOMotorClientSession,
+
     ):
         ...

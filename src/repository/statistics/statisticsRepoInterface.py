@@ -3,13 +3,13 @@ from abc import ABC, abstractmethod
 
 class StatisticsRepoInterface(ABC):
     @abstractmethod
-    async def new(self, session, subject, uid):
+    async def new(self, subject, uid):
         ...
 
     @abstractmethod
-    async def get(self, session, subject, uid):
+    async def get(self, subject, uid):
         ...
 
     @abstractmethod
-    async def update(self, session, uid, subject, theme) -> None:
+    async def update(self, uid, subject, theme) -> None:
         ...

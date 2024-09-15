@@ -43,14 +43,15 @@ class PostgresConfig:
 
 @dataclass
 class MongoDBConfig:
-    host: str = os.getenv("MONGO_HOST", 'localhost')
+    host: str = os.getenv("MONGO_HOST", 'db_mongo')
     port: int = os.getenv("MONGO_PORT", 27017)
     database: str = os.getenv("MONGO_INITDB_DATABASE")
-    username: str = os.getenv("MONGO_INITDB_ROOT_USERNAME")
-    password: str = os.getenv("MONGO_INITDB_ROOT_PASSWORD")
+    # username: str = os.getenv("MONGO_INITDB_ROOT_USERNAME")
+    # password: str = os.getenv("MONGO_INITDB_ROOT_PASSWORD")
     filter_collection: str = os.getenv("FILTER_COLLECTION")
     statistics_collection: str = os.getenv("STATISTICS_COLLECTION")
-    url: str = f"mongodb://{username}:{password}@{host}:{port}"
+    # url: str = f"mongodb://{username}:{password}@{host}:{port}/{database}"
+    url: str = f"mongodb://localhost:{port}/{database}"
 
 
 @dataclass

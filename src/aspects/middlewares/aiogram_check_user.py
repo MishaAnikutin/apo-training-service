@@ -4,9 +4,9 @@ from aiogram.types import Message
 from aiogram import BaseMiddleware
 from dishka.integrations.aiogram import FromDishka
 
-from src.use_cases.register.bot.states import FormStates
-from src.use_cases.register.bot.handlers import form
-from src.service.UserService import UserService
+from src.controllers.register.bot.states import FormStates
+from src.controllers.register.bot.handlers import form
+from src.service.userService import UserService
 from dishka.integrations.base import wrap_injection
 
 
@@ -29,10 +29,8 @@ class AiogramCheckUserMiddleware(BaseMiddleware):
             user_service: FromDishka[UserService]
     ) -> Any:
 
-        print('я в миддлвари')
         # Если пользователя нет в БД
         if not await user_service.check_user(uid=event.from_user.id):
-            print('пользователя нет')
             # Ставим ему состояние StartForm
             await data.get('state').set_state(FormStates.StartForm)
 

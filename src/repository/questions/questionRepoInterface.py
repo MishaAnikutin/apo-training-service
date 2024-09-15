@@ -10,7 +10,7 @@ from src.models import TrainFilterData
 class QuestionRepoInterface(ABC):
     @abstractmethod
     async def get_random_question(
-            self, transaction: AsyncSession,
+            self, session: AsyncSession,
             subject: Subjects,
             question_types: list[QuestionType],
             user_filter: TrainFilterData

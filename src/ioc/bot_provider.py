@@ -2,22 +2,24 @@ from typing import AsyncIterable
 
 from aiogram.types import TelegramObject
 from dishka import Provider, Scope, from_context, provide
-from motor.motor_asyncio import AsyncIOMotorClientSession
+# from motor.motor_asyncio import AsyncIOMotorClientSession
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from src.database.mongo.session import mongo_client
 from src.database.postgres.session import postgres_session_maker
 
 from src.repository.files import PhotoRepository
+from src.repository.filters.filterRepository import FilterRepository
 from src.repository.questions import QuestionRepoInterface
 from src.repository.questions.questionRepository import QuestionRepository
 from src.repository.statistics import StatisticsRepoInterface
 from src.repository.regionsRepository import RegionRepository
 from src.repository.statistics.statisticsRepository import StatisticsRepository
 from src.repository.user import UserRepoInterface, UserRepository
-from src.repository.filters import MockFilterRepo, FilterRepoInterface
+from src.repository.filters import FilterRepoInterface
+from src.service.statisticsService import StatisticsService
 
-from src.service.UserService import UserService
+from src.service.userService import UserService
 from src.service.filterService import FilterService
 from src.service.phraseService import PhraseService
 from src.service.validationService import ValidationService
@@ -32,7 +34,7 @@ class BotProvider(Provider):
     )
 
     @provide(scope=Scope.APP)
-    async def session_maker(self) -> async_sessionmaker[AsyncSession]:
+    async def postgres_session_maker(self) -> async_sessionmaker[AsyncSession]:
         # Фабрика сессий
         return postgres_session_maker()
 
@@ -41,10 +43,10 @@ class BotProvider(Provider):
         async with session_maker() as session:
             yield session
 
-    @provide(scope=Scope.REQUEST)
-    async def mongo_client(self) -> AsyncIterable[AsyncIOMotorClientSession]:
-        async with await mongo_client.start_session() as session:
-            yield session
+    # @provide(scope=Scope.REQUEST)
+    # async def mongo_session(self) -> AsyncIterable[AsyncIOMotorClientSession]:
+    #     async with await mongo_client.start_session() as session:
+    #         yield session
 
     @provide(scope=Scope.APP)
     async def user_repository(self) -> UserRepoInterface:
@@ -56,7 +58,7 @@ class BotProvider(Provider):
 
     @provide(scope=Scope.APP)
     async def filter_repository(self) -> FilterRepoInterface:
-        return MockFilterRepo()
+        return FilterRepository()
 
     @provide(scope=Scope.APP)
     async def photo_repository(self) -> PhotoRepository:
@@ -78,9 +80,17 @@ class BotProvider(Provider):
     async def filter_service(
             self,
             filter_repo: FilterRepoInterface,
-            session: AsyncIOMotorClientSession
+            # session: AsyncIOMotorClientSession
     ) -> FilterService:
-        return FilterService(filter_repo=filter_repo, session=session)
+        return FilterService(filter_repo=filter_repo)
+
+    @provide(scope=Scope.REQUEST)
+    async def statistics_service(
+            self,
+            statistics_repo: StatisticsRepoInterface,
+            # session: AsyncIOMotorClientSession
+    ) -> StatisticsService:
+        return StatisticsService(statistics_repo=statistics_repo)
 
     @provide(scope=Scope.REQUEST)
     async def phrase_service(self) -> PhraseService:
@@ -94,14 +104,14 @@ class BotProvider(Provider):
     async def answer_saga(
             self,
             postgres_session: AsyncSession,
-            mongo_session: AsyncIOMotorClientSession,
+            # mongo_session: AsyncIOMotorClientSession,
             user_repo: UserRepoInterface,
             question_repo: QuestionRepoInterface,
             statistics_repo: StatisticsRepoInterface
     ) -> AnswerSagaOrchestrator:
         return AnswerSagaOrchestrator(
             postgres_session=postgres_session,
-            mongo_session=mongo_session,
+            # mongo_session=mongo_session,
             question_repo=question_repo,
             statistics_repo=statistics_repo,
             user_repo=user_repo
@@ -111,14 +121,14 @@ class BotProvider(Provider):
     async def question_saga(
             self,
             postgres_session: AsyncSession,
-            mongo_session: AsyncIOMotorClientSession,
+            # mongo_session: AsyncIOMotorClientSession,
             filter_repo: FilterRepoInterface,
             question_repo: QuestionRepoInterface,
             user_repo: UserRepoInterface
     ) -> QuestionSagaOrchestrator:
         return QuestionSagaOrchestrator(
             postgres_session=postgres_session,
-            mongo_session=mongo_session,
+            # mongo_session=mongo_session,
             filter_repo=filter_repo,
             question_repo=question_repo,
             user_repo=user_repo

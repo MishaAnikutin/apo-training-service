@@ -3,13 +3,14 @@ from src.repository.statistics import StatisticsRepoInterface
 
 
 class StatisticsService:
-    def __init__(self, statistics_repo: StatisticsRepoInterface, session):
+    def __init__(self, statistics_repo: StatisticsRepoInterface):
         self.statistics_repo = statistics_repo
-        self.session = session
 
-    async def get_user(self, uid) -> StatisticsData:
-        user_statistics = await self.statistics_repo.get(session=self.session, uid=uid)
-        return
+    async def new(self, uid, subject: str):
+        await self.statistics_repo.new(uid=uid, subject=subject)
+
+    async def get_user(self, uid, subject: str) -> StatisticsData:
+        return await self.statistics_repo.get(uid=uid, subject=subject)
 
     async def get_user_top_place(self) -> int:
         """Место человека в топе"""

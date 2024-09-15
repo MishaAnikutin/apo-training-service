@@ -1,21 +1,17 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from src.models import Subjects
 from src.models.filterData import ThemeFilter, SourceFilter
 from src.models.questionType import QuestionType
 from src.repository.filters import FilterRepoInterface
 
 
 class FilterService:
-    def __init__(
-            self,
-            filter_repo: FilterRepoInterface,
-            session: AsyncSession
-    ):
+    def __init__(self, filter_repo: FilterRepoInterface):
         self.filter_repo = filter_repo
-        self.session = session
 
-    async def create(self, uid: int):
-        await self.filter_repo.new(uid=uid, session=self.session)
+    async def new(self, uid: int, subject: Subjects):
+        await self.filter_repo.new(uid=uid, subject=subject)
 
     async def is_standard_filters(self, uid) -> bool:
         return True

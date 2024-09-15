@@ -1,3 +1,6 @@
+mongo_db
+pg_db
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -126,7 +129,7 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env
+src/.env
 .venv
 env/
 venv/

@@ -4,7 +4,7 @@ from src.settings import PostgresConfig
 
 engine = create_async_engine(
     url=PostgresConfig.url_str,
-    echo=True,
+    echo=False,
     pool_pre_ping=True
 )
 

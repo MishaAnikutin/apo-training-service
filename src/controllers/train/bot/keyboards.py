@@ -1,8 +1,8 @@
 from aiogram.utils.keyboard import ReplyKeyboardBuilder, KeyboardButton, InlineKeyboardBuilder
 from aiogram.types import ReplyKeyboardRemove
 
-from src.use_cases.train.bot.callbacks import TrainCallbacks
-from src.use_cases.train.bot.utils import get_response_list
+from src.controllers.train.bot.callbacks import TrainCallbacks
+from src.controllers.train.bot.utils import get_response_list
 from src.models import QuestionType, QuestionData
 
 
